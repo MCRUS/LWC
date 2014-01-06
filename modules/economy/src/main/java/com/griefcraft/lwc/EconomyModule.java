@@ -40,6 +40,7 @@ import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegistrationPostEvent;
 import com.griefcraft.scripting.event.LWCProtectionRemovePostEvent;
 import com.griefcraft.util.Colors;
+import com.griefcraft.util.StringUtil;
 import com.griefcraft.util.config.Configuration;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -150,14 +151,14 @@ public class EconomyModule extends JavaModule {
         // Can they afford it?
         if (!lwc.getCurrency().canAfford(player, usageFee)) {
             // Nope!
-            player.sendMessage(Colors.Red + "You need " + lwc.getCurrency().format(usageFee) + " to open your protection!");
+            player.sendMessage(Colors.Red + "Вам нужно " + lwc.getCurrency().format(usageFee) + " для открытия защиты!");
             event.setResult(Result.CANCEL);
             return;
         }
 
         // Charge them!
         lwc.getCurrency().removeMoney(player, usageFee);
-        player.sendMessage(Colors.Green + "You have been charged " + lwc.getCurrency().format(usageFee) + " to open your protection.");
+        player.sendMessage(Colors.Green + "С Вас " + StringUtil.plural(Integer.parseInt(usageFee + ""), "был снят", "было снято", "было снято") + " " + lwc.getCurrency().format(usageFee) + " за открытие защиты.");
     }
 
     @Override
@@ -211,7 +212,7 @@ public class EconomyModule extends JavaModule {
 
             // check the server bank
             if (!lwc.getCurrency().canCentralBankAfford(charge)) {
-                player.sendMessage(Colors.Red + "The Server's Bank does not contain enough funds to remove that protection!");
+                player.sendMessage(Colors.Red + "Банк сервера не имеет достаточно средств для снятия данной защиты!");
                 event.setCancelled(true);
                 return;
             }
@@ -330,7 +331,7 @@ public class EconomyModule extends JavaModule {
             ICurrency currency = lwc.getCurrency();
 
             currency.addMoney(owner, charge);
-            owner.sendMessage(Colors.Green + "You have been refunded " + currency.format(charge) + " because an LWC protection of yours was removed!");
+            owner.sendMessage(Colors.Green + "Вам были возвращены средства в размере " + currency.format(charge) + " так как защита LWC вашего блока была удалена!");
         }
     }
 
@@ -423,15 +424,15 @@ public class EconomyModule extends JavaModule {
 
         // It's free!
         if (charge == 0) {
-            player.sendMessage(Colors.Green + "This one's on us!");
+            player.sendMessage(Colors.Green + "Бесплатно!");
             return;
         }
 
         // charge them
         if (charge != 0) {
             if (!currency.canAfford(player, charge)) {
-                player.sendMessage(Colors.Red + "You do not have enough " + currency.getMoneyName() + " to buy an LWC protection.");
-                player.sendMessage(Colors.Red + "The balance required for an LWC protection is: " + currency.format(charge));
+                player.sendMessage(Colors.Red + "У Вас нет " + currency.getMoneyName() + " для покупки LWC зашиты.");
+                player.sendMessage(Colors.Red + "Для защиты вам надо: " + currency.format(charge));
 
                 // remove from cache
                 priceCache.remove(location);
@@ -441,7 +442,7 @@ public class EconomyModule extends JavaModule {
 
             // remove the money from their account
             currency.removeMoney(player, charge);
-            player.sendMessage(Colors.Green + "Charged " + currency.format(charge) + (usedDiscount ? (Colors.Red + " (Discount)" + Colors.Green) : "") + " for an LWC protection. Thank you.");
+            player.sendMessage(Colors.Green + "Вы оплатили " + currency.format(charge) + (usedDiscount ? (Colors.Red + " (Скидка)" + Colors.Green) : "") + " за LWC защиты. Спасибо.");
             return;
         }
 
@@ -480,7 +481,7 @@ public class EconomyModule extends JavaModule {
     private double resolveDouble(Player player, String node, boolean sortHighest) {
         LWC lwc = LWC.getInstance();
         double value = -1;
-        
+
         String cacheKey = "resolve-" + player.getName() + node;
         if (cache.containsKey(cacheKey)) {
             return Double.parseDouble(cache.get(cacheKey));
@@ -489,7 +490,8 @@ public class EconomyModule extends JavaModule {
         // try the player
         try {
             value = Double.parseDouble(configuration.getString("players." + player.getName() + "." + node, "-1"));
-        } catch (NumberFormatException e) { } // May I be forgiven in hell for that
+        } catch (NumberFormatException e) {
+        } // May I be forgiven in hell for that
 
         // try their groups
         if (value == -1) {
@@ -497,7 +499,7 @@ public class EconomyModule extends JavaModule {
                 if (groupName != null && !groupName.isEmpty()) {
                     try {
                         double v = Double.parseDouble(map("groups." + groupName + "." + node, "-1"));
-                        
+
                         if (v == -1) {
                             continue;
                         }
@@ -508,7 +510,8 @@ public class EconomyModule extends JavaModule {
                         } else if (!sortHighest && (v < value || value == -1)) {
                             value = v;
                         }
-                    } catch (NumberFormatException e) { }
+                    } catch (NumberFormatException e) {
+                    }
                 }
             }
         }
@@ -517,9 +520,10 @@ public class EconomyModule extends JavaModule {
         if (value == -1) {
             try {
                 value = Double.parseDouble(map("iConomy." + node, "-1"));
-            } catch (NumberFormatException e) { }
+            } catch (NumberFormatException e) {
+            }
         }
-        
+
         cache.put(cacheKey, Double.toString(value));
         return value;
     }

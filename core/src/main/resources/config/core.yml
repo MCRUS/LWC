@@ -3,7 +3,7 @@ core:
 
     # The language LWC will use, specified by the shortname. For example, English = en, French = fr, German = de,
     # and so on
-    locale: en
+    locale: ru
 
     # How often updates are batched to the database (in seconds). If set to a higher value than 10, you may have
     # some unexpected results, especially if your server is prone to crashing.

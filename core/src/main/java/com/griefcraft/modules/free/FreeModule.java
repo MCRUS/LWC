@@ -82,7 +82,10 @@ public class FreeModule extends JavaModule {
                 }
 
                 protection.remove();
-                lwc.sendLocale(player, "protection.interact.remove.finalize", "block", LWC.materialToString(protection.getBlockId()));
+                if (lwc.getPlugin().getCurrentLocale().equals("ru"))
+                    lwc.sendRussianUnprotect(player, protection.getBlock());
+                else
+                    lwc.sendLocale(player, "protection.interact.remove.finalize", "block", LWC.materialToString(protection.getBlockId()));
             }
 
             lwc.removeModes(player);

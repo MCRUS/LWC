@@ -114,10 +114,7 @@ import com.griefcraft.util.config.Configuration;
 import com.griefcraft.util.locale.LocaleUtil;
 import com.griefcraft.util.matchers.DoubleChestMatcher;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -140,6 +137,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import static org.bukkit.Material.WOODEN_DOOR;
 
 public class LWC {
 
@@ -660,7 +659,7 @@ public class LWC {
                 String owner = protection.getOwner();
 
                 // replace your username with "you" if you own the protection
-                if (owner.equalsIgnoreCase(player.getName())) {
+                if (owner.equalsIgnoreCase(player.getName()) && !plugin.getCurrentLocale().equals("ru")) {
                     owner = parser.parseMessage("you");
                 }
 
@@ -674,7 +673,10 @@ public class LWC {
                 if (parser.parseMessage("protection." + blockName.toLowerCase() + ".notice.protected") != null) {
                     sendLocale(player, "protection." + blockName.toLowerCase() + ".notice.protected", "type", protectionTypeToString, "block", blockName, "owner", owner);
                 } else {
-                    sendLocale(player, "protection.general.notice.protected", "type", protectionTypeToString, "block", blockName, "owner", owner);
+                    if (plugin.getCurrentLocale().equals("ru")) {
+                        sendRussianDeny(player, block, owner);
+                    } else
+                        sendLocale(player, "protection.general.notice.protected", "type", protectionTypeToString, "block", blockName, "owner", owner);
                 }
             }
         }
@@ -685,11 +687,314 @@ public class LWC {
             if (type == Protection.Type.PASSWORD) {
                 sendLocale(player, "protection.general.locked.password", "block", materialToString(block), "owner", protection.getOwner());
             } else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION) {
-                sendLocale(player, "protection.general.locked.private", "block", materialToString(block), "owner", protection.getOwner());
+                if (plugin.getCurrentLocale().equals("ru")) {
+                    sendRussianDeny(player, block);
+                } else
+                    sendLocale(player, "protection.general.locked.private", "block", materialToString(block), "owner", protection.getOwner());
             }
         }
 
         return hasAccess;
+    }
+
+    public void sendRussianSuccefullOnPlace(Player p, String type, Block b) {
+        String msg;
+        switch (b.getType()) {
+            case WOODEN_DOOR:
+                msg = ChatColor.GREEN + "Деревянная дверь " + ChatColor.GREEN + "автоматически ";
+                if (type.equals("public"))
+                    msg = msg + "стала публичной.";
+                else if (type.equals("private"))
+                    msg = msg + "приватизирована.";
+                else if (type.equals("password"))
+                    msg = msg + "запоролена.";
+                else if (type.equals("kick_trap"))
+                    msg = msg + "стала кик-ловушкой.";
+                else if (type.equals("ban_trap"))
+                    msg = msg + "стала бан-ловушкой.";
+                break;
+            case TRAP_DOOR:
+                msg = ChatColor.GREEN + "Люк " + ChatColor.GREEN + "автоматически ";
+                if (type.equals("public"))
+                    msg = msg + "стал публичным.";
+                else if (type.equals("private"))
+                    msg = msg + "приватизирован.";
+                else if (type.equals("password"))
+                    msg = msg + "запоролен.";
+                else if (type.equals("kick_trap"))
+                    msg = msg + "стал кик-ловушкой.";
+                else if (type.equals("ban_trap"))
+                    msg = msg + "стал бан-ловушкой.";
+                break;
+            case FENCE_GATE:
+                msg = ChatColor.GREEN + "Ворота " + ChatColor.GREEN + "автоматически ";
+                if (type.equals("public"))
+                    msg = msg + "стали публичными.";
+                else if (type.equals("private"))
+                    msg = msg + "приватизированы.";
+                else if (type.equals("password"))
+                    msg = msg + "запоролены.";
+                else if (type.equals("kick_trap"))
+                    msg = msg + "стали кик-ловушкой.";
+                else if (type.equals("ban_trap"))
+                    msg = msg + "стали бан-ловушкой.";
+                break;
+            case SIGN:
+            case SIGN_POST:
+            case WALL_SIGN:
+                msg = ChatColor.GREEN + "Табличка " + ChatColor.GREEN + "автоматически ";
+                if (type.equals("public"))
+                    msg = msg + "стала публичной.";
+                else if (type.equals("private"))
+                    msg = msg + "приватизирована.";
+                else if (type.equals("password"))
+                    msg = msg + "запоролена.";
+                else if (type.equals("kick_trap"))
+                    msg = msg + "стала кик-ловушкой.";
+                else if (type.equals("ban_trap"))
+                    msg = msg + "стала бан-ловушкой.";
+                break;
+            case DISPENSER:
+                msg = ChatColor.GREEN + "Раздатчик " + ChatColor.GREEN + "автоматически ";
+                if (type.equals("public"))
+                    msg = msg + "стал публичным.";
+                else if (type.equals("private"))
+                    msg = msg + "приватизирован.";
+                else if (type.equals("password"))
+                    msg = msg + "запоролен.";
+                else if (type.equals("kick_trap"))
+                    msg = msg + "стал кик-ловушкой.";
+                else if (type.equals("ban_trap"))
+                    msg = msg + "стал бан-ловушкой.";
+                break;
+            case FURNACE:
+            case BURNING_FURNACE:
+                msg = ChatColor.GREEN + "Печь " + ChatColor.GREEN + "автоматически ";
+                if (type.equals("public"))
+                    msg = msg + "стала публичной.";
+                else if (type.equals("private"))
+                    msg = msg + "приватизирована.";
+                else if (type.equals("password"))
+                    msg = msg + "запоролена.";
+                else if (type.equals("kick_trap"))
+                    msg = msg + "стала кик-ловушкой.";
+                else if (type.equals("ban_trap"))
+                    msg = msg + "стала бан-ловушкой.";
+                break;
+            case IRON_DOOR:
+            case IRON_DOOR_BLOCK:
+                msg = ChatColor.GREEN + "Железная дверь " + ChatColor.GREEN + "автоматически ";
+                if (type.equals("public"))
+                    msg = msg + "стала публичной.";
+                else if (type.equals("private"))
+                    msg = msg + "приватизирована.";
+                else if (type.equals("password"))
+                    msg = msg + "запоролена.";
+                else if (type.equals("kick_trap"))
+                    msg = msg + "стала кик-ловушкой.";
+                else if (type.equals("ban_trap"))
+                    msg = msg + "стала бан-ловушкой.";
+                break;
+            case CHEST:
+            case TRAPPED_CHEST:
+                msg = ChatColor.GREEN + "Сундук " + ChatColor.GREEN + "автоматически ";
+                if (type.equals("public"))
+                    msg = msg + "стал публичным.";
+                else if (type.equals("private"))
+                    msg = msg + "приватизирован.";
+                else if (type.equals("password"))
+                    msg = msg + "запоролен.";
+                else if (type.equals("kick_trap"))
+                    msg = msg + "стал кик-ловушкой.";
+                else if (type.equals("ban_trap"))
+                    msg = msg + "стал бан-ловушкой.";
+                break;
+            case ENDER_CHEST:
+                msg = ChatColor.GREEN + "Сундук Эндера " + ChatColor.GREEN + "автоматически ";
+                if (type.equals("public"))
+                    msg = msg + "стал публичным.";
+                else if (type.equals("private"))
+                    msg = msg + "приватизирован.";
+                else if (type.equals("password"))
+                    msg = msg + "запоролен.";
+                else if (type.equals("kick_trap"))
+                    msg = msg + "стал кик-ловушкой.";
+                else if (type.equals("ban_trap"))
+                    msg = msg + "стал бан-ловушкой.";
+                break;
+            default:
+                sendLocale(p, "protection.onplace.create.finalize", "type", getPlugin().getMessageParser().parseMessage(type), "block", LWC.materialToString(b));
+                return;
+        }
+        p.sendMessage(msg);
+    }
+
+    public void sendRussianUnregistered(Player p, Block b) {
+        String msg;
+        switch (b.getType()) {
+            case WOODEN_DOOR:
+                msg = ChatColor.RED + "Деревянная дверь " + ChatColor.RED + "больше не зарегистрирована";
+                break;
+            case TRAP_DOOR:
+                msg = ChatColor.RED + "Люк " + ChatColor.RED + "больше не зарегистрирован";
+                break;
+            case FENCE_GATE:
+                msg = ChatColor.RED + "Ворота " + ChatColor.RED + "больше не зарегистрированы";
+                break;
+            case SIGN:
+            case SIGN_POST:
+            case WALL_SIGN:
+                msg = ChatColor.RED + "Табличка " + ChatColor.RED + "больше не зарегистрирована";
+                break;
+            case DISPENSER:
+                msg = ChatColor.RED + "Раздатчик " + ChatColor.RED + "больше не зарегистрирован";
+                break;
+            case FURNACE:
+            case BURNING_FURNACE:
+                msg = ChatColor.RED + "Печь " + ChatColor.RED + "больше не зарегистрирована";
+                break;
+            case IRON_DOOR:
+            case IRON_DOOR_BLOCK:
+                msg = ChatColor.RED + "Железная дверь " + ChatColor.RED + "больше не зарегистрирована";
+                break;
+            case CHEST:
+            case TRAPPED_CHEST:
+                msg = ChatColor.RED + "Сундук " + ChatColor.RED + "больше не зарегистрирован";
+                break;
+            case ENDER_CHEST:
+                msg = ChatColor.RED + "Сундук Эндера " + ChatColor.RED + "больше не зарегистрирован";
+                break;
+            default:
+                sendLocale(p, "protection.unregistered", "block", LWC.materialToString(b.getType()));
+                return;
+        }
+        p.sendMessage(msg);
+    }
+
+    public void sendRussianUnprotect(Player p, Block b) {
+        String msg;
+        switch (b.getType()) {
+            case WOODEN_DOOR:
+                msg = ChatColor.RED + "Деревянная дверь " + ChatColor.RED + "больше без шащиты";
+                break;
+            case TRAP_DOOR:
+                msg = ChatColor.RED + "Люк " + ChatColor.RED + "больше без шащиты";
+                break;
+            case FENCE_GATE:
+                msg = ChatColor.RED + "Ворота " + ChatColor.RED + "больше без шащиты";
+                break;
+            case SIGN:
+            case SIGN_POST:
+            case WALL_SIGN:
+                msg = ChatColor.RED + "Табличка " + ChatColor.RED + "больше без шащиты";
+                break;
+            case DISPENSER:
+                msg = ChatColor.RED + "Раздатчик " + ChatColor.RED + "больше без шащиты";
+                break;
+            case FURNACE:
+            case BURNING_FURNACE:
+                msg = ChatColor.RED + "Печь " + ChatColor.RED + "больше без шащиты";
+                break;
+            case IRON_DOOR:
+            case IRON_DOOR_BLOCK:
+                msg = ChatColor.RED + "Железная дверь " + ChatColor.RED + "больше без шащиты";
+                break;
+            case CHEST:
+            case TRAPPED_CHEST:
+                msg = ChatColor.RED + "Сундук " + ChatColor.RED + "больше без шащиты";
+                break;
+            case ENDER_CHEST:
+                msg = ChatColor.RED + "Сундук Эндера " + ChatColor.RED + "больше без шащиты";
+                break;
+            default:
+                sendLocale(p, "protection.interact.remove.finalize", "block", materialToString(b.getType()));
+                return;
+        }
+        p.sendMessage(msg);
+    }
+
+    public void sendRussianDeny(Player p, Block b, String owner) {
+        String msg;
+        switch (b.getType()) {
+            case WOODEN_DOOR:
+                msg = ChatColor.RED + "Деревянная дверь " + ChatColor.WHITE + "защищена игроком " + ChatColor.YELLOW + owner;
+                break;
+            case TRAP_DOOR:
+                msg = ChatColor.RED + "Люк " + ChatColor.WHITE + "защищен игроком " + ChatColor.YELLOW + owner;
+                break;
+            case FENCE_GATE:
+                msg = ChatColor.RED + "Ворота " + ChatColor.WHITE + "защищены игроком " + ChatColor.YELLOW + owner;
+                break;
+            case SIGN:
+            case SIGN_POST:
+            case WALL_SIGN:
+                msg = ChatColor.RED + "Табличка " + ChatColor.WHITE + "защищена игроком " + ChatColor.YELLOW + owner;
+                break;
+            case DISPENSER:
+                msg = ChatColor.RED + "Раздатчик " + ChatColor.WHITE + "защищен игроком " + ChatColor.YELLOW + owner;
+                break;
+            case FURNACE:
+            case BURNING_FURNACE:
+                msg = ChatColor.RED + "Печь " + ChatColor.WHITE + "защищена игроком " + ChatColor.YELLOW + owner;
+                break;
+            case IRON_DOOR:
+            case IRON_DOOR_BLOCK:
+                msg = ChatColor.RED + "Железная дверь " + ChatColor.WHITE + "защищена игроком " + ChatColor.YELLOW + owner;
+                break;
+            case CHEST:
+            case TRAPPED_CHEST:
+                msg = ChatColor.RED + "Сундук " + ChatColor.WHITE + "защищен игроком " + ChatColor.YELLOW + owner;
+                break;
+            case ENDER_CHEST:
+                msg = ChatColor.RED + "Сундук Эндера " + ChatColor.WHITE + "защищен игроком " + ChatColor.YELLOW + owner;
+                break;
+            default:
+                sendLocale(p, "protection.general.locked.private", "block", materialToString(b), "owner", owner);
+                return;
+        }
+        p.sendMessage(msg);
+    }
+
+    public void sendRussianDeny(Player p, Block b) {
+        String msg;
+        switch (b.getType()) {
+            case WOODEN_DOOR:
+                msg = ChatColor.RED + "Деревянная дверь " + ChatColor.WHITE + "защищена магией";
+                break;
+            case TRAP_DOOR:
+                msg = ChatColor.RED + "Люк " + ChatColor.WHITE + "защищен магией";
+                break;
+            case FENCE_GATE:
+                msg = ChatColor.RED + "Ворота " + ChatColor.WHITE + "защищены магией";
+                break;
+            case SIGN:
+            case SIGN_POST:
+            case WALL_SIGN:
+                msg = ChatColor.RED + "Табличка " + ChatColor.WHITE + "защищена магией";
+                break;
+            case DISPENSER:
+                msg = ChatColor.RED + "Раздатчик " + ChatColor.WHITE + "защищен магией";
+                break;
+            case FURNACE:
+            case BURNING_FURNACE:
+                msg = ChatColor.RED + "Печь " + ChatColor.WHITE + "защищена магией";
+                break;
+            case IRON_DOOR:
+            case IRON_DOOR_BLOCK:
+                msg = ChatColor.RED + "Железная дверь " + ChatColor.WHITE + "защищена магией";
+                break;
+            case CHEST:
+            case TRAPPED_CHEST:
+                msg = ChatColor.RED + "Сундук " + ChatColor.WHITE + "защищен магией";
+                break;
+            case ENDER_CHEST:
+                msg = ChatColor.RED + "Сундук Эндера " + ChatColor.WHITE + "защищен магией";
+                break;
+            default:
+                sendLocale(p, "protection.general.locked.private", "block", materialToString(b), "owner", "");
+                return;
+        }
+        p.sendMessage(msg);
     }
 
     /**
@@ -1872,8 +2177,10 @@ public class LWC {
 
         if (isAdmin(sender)) {
             sender.sendMessage("");
-            sender.sendMessage(Colors.Red + "/lwc admin - Administration");
+            sender.sendMessage(Colors.Red + "/lwc admin - Управление");
         }
+        if (plugin.getCurrentLocale().equals("ru"))
+            sender.sendMessage(ChatColor.BLUE + "Перевод Egor33345 и Alex_Bond_UA");
     }
 
     /**
